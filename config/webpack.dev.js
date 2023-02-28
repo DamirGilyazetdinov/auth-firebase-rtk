@@ -1,5 +1,12 @@
+const webpack = require('webpack')
 const { merge } = require('webpack-merge');
+const dotenv = require('dotenv');
 const commonConfig = require('./webpack.common');
+const env = dotenv.config({path: './.env.development'}).parsed; 
+const envKeys = Object.keys(env).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(env[next]);
+    return prev;
+}, {});
 
 const devConfig = {
     target: "web",
@@ -20,6 +27,9 @@ const devConfig = {
             '/api': 'http://localhost:5000',
         }
     },
+    plugins: [
+        new webpack.DefinePlugin(envKeys)
+    ]
 };
 
 module.exports = merge(commonConfig, devConfig);
